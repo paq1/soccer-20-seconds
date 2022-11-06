@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::f32::consts::PI;
 
 use ggez::{event, GameResult, graphics};
 use ggez::glam::Vec2;
@@ -129,7 +130,7 @@ impl event::EventHandler<ggez::GameError> for InGame {
             DrawParam {
                 transform: Transform::Values {
                     dest: Point2 {x: self.player.position.0, y: self.player.position.1},
-                    rotation: self.player.angle * 3.14 / 180.0,
+                    rotation: (self.player.angle + 90.0) * std::f32::consts::PI / 180.0,
                     scale: Vector2 {x: 1.0, y: 1.0},
                     offset: Point2 {x: 0.5, y: 0.5},
                 },
