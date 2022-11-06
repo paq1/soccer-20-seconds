@@ -70,9 +70,9 @@ impl Tilemap {
 }
 
 impl TileLayout {
-    pub fn collide_with(&self, position: (f32, f32), tile_size: f32, object_size: f32) -> bool {
-        let c = (position.0 + object_size / 2.0) / tile_size;
-        let l = (position.1 + object_size / 2.0) / tile_size;
+    pub fn collide_with(&self, position: (f32, f32), tile_size: f32) -> bool {
+        let c = position.0 / tile_size;
+        let l = position.1 / tile_size;
         let centre = &self.tiles[l as usize][c as usize].0;
         *centre == Tile::Mur
     }

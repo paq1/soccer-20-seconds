@@ -2,6 +2,8 @@ use std::collections::HashMap;
 
 use ggez::{event, GameResult, graphics};
 use ggez::glam::Vec2;
+use ggez::graphics::{DrawParam, Transform};
+use ggez::mint::{Point2, Vector2};
 
 use player::Player;
 use tilemap::Tilemap;
@@ -122,7 +124,19 @@ impl event::EventHandler<ggez::GameError> for InGame {
 
          */
 
-        canvas.draw(&self.player_image, Vec2 { x: self.player.position.0 as f32, y: self.player.position.1 as f32 });
+        canvas.draw(
+            &self.player_image,
+            DrawParam {
+                transform: Transform::Values {
+                    dest: Point2 {x: self.player.position.0, y: self.player.position.1},
+                    rotation: self.player.angle * 3.14 / 180.0,
+                    scale: Vector2 {x: 1.0, y: 1.0},
+                    offset: Point2 {x: 0.5, y: 0.5},
+                },
+                ..Default::default()
+                }
+        );
+
         if self.show_debug {
             canvas.draw(&text, Vec2 { x: 0.0, y: 0.0 });
             canvas.draw(&text_dt, Vec2 { x: 0.0, y: 32.0 });
