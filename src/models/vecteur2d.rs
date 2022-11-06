@@ -4,12 +4,6 @@ pub struct Vecteur2D {
 }
 
 impl Vecteur2D {
-    pub fn new(x1: f32, y1: f32, x2: f32, y2: f32) -> Self {
-        Self {
-            x: x2 - x1,
-            y: y2 - y1
-        }
-    }
 
     pub fn norme(&self) -> f32 {
         f32::sqrt(f32::powf(self.x, 2.0) + f32::powf(self.y, 2.0))
@@ -26,9 +20,14 @@ impl Vecteur2D {
 
         let radiant = angle * std::f32::consts::PI / 180.0;
 
+        let norme = Vecteur2D {
+            x: position.0,
+            y: position.1
+        }.norme();
+
         let direction = Vecteur2D {
-            x: position.0 * f32::cos(radiant),
-            y: position.1 * f32::sin(radiant)
+            x: norme * f32::cos(radiant),
+            y: norme * f32::sin(radiant)
         };
 
         direction.unitaire()

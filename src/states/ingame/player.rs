@@ -38,23 +38,29 @@ impl Player {
         keys.iter()
             .for_each(|key| {
                 match key {
-                    Input::UP => {
-                        // self.position.1 -= VITESSE * dt
+                    Input::RIGHT => {
+                        self.angle += VITESSE * dt;
+                    },
+                    Input::DOWN => self.position.1 += VITESSE * dt,
+                    Input::LEFT => {
+                        self.angle -= VITESSE * dt;
+                    },
+                    _ => {}
+                }
+            });
 
+        self.angle = self.update_angle();
+
+        keys.iter()
+            .for_each(|key| {
+                match key {
+                    Input::UP => {
                         let direction = Vecteur2D::from(self.position, self.angle);
 
                         self.position.0 += direction.x * VITESSE * dt;
                         self.position.1 += direction.y * VITESSE * dt;
                     },
-                    Input::RIGHT => {
-                        // self.position.0 += VITESSE * dt;
-                        self.angle += VITESSE * dt;
-                    },
-                    Input::DOWN => self.position.1 += VITESSE * dt,
-                    Input::LEFT => {
-                        // self.position.0 -= VITESSE * dt;
-                        self.angle -= VITESSE * dt;
-                    },
+                    _ => {}
                 }
             });
 
@@ -62,5 +68,15 @@ impl Player {
             self.position = old_position;
         }
 
+    }
+
+    fn update_angle(&self) -> f32 {
+        if self.angle > 360.0 {
+            self.angle - 360.0
+        } else if self.angle < 0.0 {
+            self.angle + 360.0
+        } else {
+            self.angle
+        }
     }
 }

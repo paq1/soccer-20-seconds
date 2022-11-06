@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::f32::consts::PI;
 
 use ggez::{event, GameResult, graphics};
 use ggez::glam::Vec2;
@@ -10,17 +9,22 @@ use player::Player;
 use tilemap::Tilemap;
 
 use crate::models::Input;
+use crate::models::vecteur2d::Vecteur2D;
+use crate::states::ingame::ballon::Ballon;
 use crate::states::ingame::tilemap::Tile;
 
 mod player;
 mod tilemap;
+mod ballon;
 
 pub struct InGame {
     show_debug: bool,
     player: Player,
     tilemap: Tilemap,
+    ballon: Ballon,
     player_image: graphics::Image,
     tiles_images: HashMap<Tile, graphics::Image>,
+    ballon_image: graphics::Image,
     dt: f32
 }
 
@@ -30,12 +34,14 @@ impl InGame {
             show_debug: true,
             player: Player :: new((100.0, 100.0)),
             tilemap: Tilemap::new(Some(25), Some(13)),
+            ballon: Ballon { position: Vecteur2D { x: 100.0, y: 100.0}, direction_du_shoot: None },
             player_image: graphics::Image::from_path(ctx, "/player-calvitie.png")?,
             tiles_images: HashMap::from([
                 (Tile::HerbeClaire, graphics::Image::from_path(ctx, "/tiles/tile-herbe-claire.png")?),
                 (Tile::HerbeFoncee, graphics::Image::from_path(ctx, "/tiles/tile-herbe-foncee.png")?),
                 (Tile::Mur, graphics::Image::from_path(ctx, "/tiles/brique.png")?),
             ]),
+            ballon_image: graphics::Image::from_path(ctx, "/ballon.png")?,
             dt: 0.0
         };
         Ok(state)
@@ -73,6 +79,7 @@ impl event::EventHandler<ggez::GameError> for InGame {
     fn update(&mut self, _ctx: &mut ggez::Context) -> GameResult {
         self.update_dt(_ctx);
         self.update_kb(_ctx)?;
+        self.ballon.update_position(self.player.position, self.player.angle);
         Ok(())
     }
 
@@ -141,6 +148,19 @@ impl event::EventHandler<ggez::GameError> for InGame {
         if self.show_debug {
             canvas.draw(&text, Vec2 { x: 0.0, y: 0.0 });
             canvas.draw(&text_dt, Vec2 { x: 0.0, y: 32.0 });
+
+            canvas.draw(
+                &self.ballon_image,
+                DrawParam {
+                    transform: Transform::Values {
+                        dest: Point2 {x: self.ballon.position.x, y: self.ballon.position.y},
+                        rotation: 0.0,
+                        scale: Vector2 {x: 1.0, y: 1.0},
+                        offset: Point2 {x: 0.5, y: 0.5},
+                    },
+                    ..Default::default()
+                }
+            )
         }
 
         canvas.finish(ctx)
