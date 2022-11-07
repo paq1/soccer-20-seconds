@@ -30,6 +30,7 @@ impl Player {
     pub fn update_deplacement(
         &mut self, keys: Vec<Input>,
         collide_layout: &TileLayout,
+        tile_size: f32,
         dt: f32
     ) {
 
@@ -41,7 +42,6 @@ impl Player {
                     Input::RIGHT => {
                         self.angle += VITESSE * dt;
                     },
-                    Input::DOWN => self.position.1 += VITESSE * dt,
                     Input::LEFT => {
                         self.angle -= VITESSE * dt;
                     },
@@ -60,11 +60,17 @@ impl Player {
                         self.position.0 += direction.x * VITESSE * dt;
                         self.position.1 += direction.y * VITESSE * dt;
                     },
+                    Input::DOWN => {
+                        let direction = Vecteur2D::from(self.position, self.angle);
+
+                        self.position.0 -= direction.x * VITESSE * dt;
+                        self.position.1 -= direction.y * VITESSE * dt;
+                    },
                     _ => {}
                 }
             });
 
-        if collide_layout.collide_with(self.position, 32.0) {
+        if collide_layout.collide_with(self.position, tile_size) {
             self.position = old_position;
         }
 

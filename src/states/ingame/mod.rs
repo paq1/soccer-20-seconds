@@ -33,7 +33,7 @@ impl InGame {
         let state = InGame {
             show_debug: true,
             player: Player :: new((100.0, 100.0)),
-            tilemap: Tilemap::new(Some(25), Some(13)),
+            tilemap: Tilemap::new(Some(25), Some(13)), // 25 / 13
             ballon: Ballon { position: Vecteur2D { x: 100.0, y: 100.0}, direction_du_shoot: None },
             player_image: graphics::Image::from_path(ctx, "/player-calvitie.png")?,
             tiles_images: HashMap::from([
@@ -57,7 +57,7 @@ impl InGame {
             .filter_map(|keycode| Input::from_keycode(keycode))
             .collect::<Vec<Input>>();
 
-        self.player.update_deplacement(keys, self.tilemap.layouts.get(1).unwrap(), self.dt);
+        self.player.update_deplacement(keys, self.tilemap.layouts.get(1).unwrap(), self.tilemap.tile_size as f32, self.dt);
         self.update_activate_debug(_ctx);
 
         Ok(())
@@ -90,47 +90,64 @@ impl event::EventHandler<ggez::GameError> for InGame {
         let text = ggez::graphics::Text::new(format!("fps ({})", ctx.time.fps()));
         let text_dt = ggez::graphics::Text::new(format!("dt ({})", self.dt));
 
+        let win_width = ctx.gfx.size().0;
+        let win_height = ctx.gfx.size().1;
+
+        // todo mettre a jour si notion de camera
         self.tilemap.layouts
             .iter()
             .for_each(|layout| {
-                layout.tiles
-                    .iter()
-                    .for_each(|tiles| {
-                        tiles
-                            .iter()
-                            .filter(|tile| tile.0 != Tile::Empty)
-                            .for_each(|tile| {
-                                let tile_image = self.tiles_images.get(&tile.0).unwrap();
-                                canvas.draw(tile_image, Vec2 { x: tile.1.x, y: tile.1.y })
-                            });
-                    });
+                let nb_l_layout = layout.tiles.len();
+                let nb_c_layout = match layout.tiles.get(0) {
+                    Some(colonne) => colonne.len(),
+                    None => 0
+                };
+
+                let max_index_width = win_width / self.tilemap.tile_size as f32;
+                let max_index_height = win_height / self.tilemap.tile_size as f32;
+
+                let index_max_c = if nb_c_layout > max_index_width as usize {
+                    max_index_width as usize
+                } else {
+                    nb_c_layout
+                };
+
+                let index_max_l = if nb_l_layout > max_index_height as usize {
+                    max_index_height as usize
+                } else {
+                    nb_l_layout
+                };
+
+                for l in 0..index_max_l {
+                    for c in 0..index_max_c {
+                        let tile = &layout.tiles[l][c].0;
+                        match self.tiles_images.get(tile) {
+                            Some(image) => {
+                                let tile_position = Point2 {
+                                    x: c as f32 * self.tilemap.tile_size as f32,
+                                    y: l as f32 * self.tilemap.tile_size as f32
+                                };
+                                // canvas.draw(image, tile_position);
+
+                                canvas.draw(
+                                    image,
+                                    DrawParam {
+                                        transform: Transform::Values {
+                                            dest: tile_position,
+                                            rotation: 0.0,
+                                            scale: Vector2 {x: 1.0, y: 1.0},
+                                            offset: Point2 {x: 0.0, y: 0.0},
+                                        },
+                                        ..Default::default()
+                                    }
+                                )
+                            },
+                            None => {}
+                        }
+                    }
+                }
+
             });
-
-        /*
-        self.tilemap.layouts
-            .iter()
-            .for_each(|layout| {
-                layout.tiles
-                    .iter()
-                    .enumerate()
-                    .for_each(|(ligne, tiles)| {
-                        tiles
-                            .iter()
-                            .enumerate()
-                            .for_each(|(colonne, tile)| {
-                                let x = colonne as f32 * self.tilemap.tile_size as f32;
-                                let y = ligne as f32 * self.tilemap.tile_size as f32;
-
-                                let tile_image = self.tiles_images.get(tile);
-                                match tile_image {
-                                    Some(image) => canvas.draw(image, Vec2 { x, y }),
-                                    None => ()
-                                }
-                            });
-                    });
-            });
-
-         */
 
         canvas.draw(
             &self.player_image,
