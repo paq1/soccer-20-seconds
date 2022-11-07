@@ -12,16 +12,19 @@ use crate::models::Input;
 use crate::models::vecteur2d::Vecteur2D;
 use crate::states::ingame::ballon::Ballon;
 use crate::states::ingame::but::But;
+use crate::states::ingame::gardien::Gardien;
 use crate::states::ingame::tilemap::Tile;
 
 mod player;
 mod tilemap;
 mod ballon;
 mod but;
+mod gardien;
 
 pub struct InGame {
     show_debug: bool,
     player: Player,
+    gardien: Gardien,
     tilemap: Tilemap,
     ballon: Option<Ballon>,
     but: But,
@@ -36,9 +39,18 @@ pub struct InGame {
 
 impl InGame {
     pub fn new(ctx: &mut ggez::Context) -> GameResult<InGame> {
+        let gardien_position = Vecteur2D {x: 32.0 * 2.0 + 16.0, y: 32.0 * 6.0 + 16.0};
         let state = InGame {
             show_debug: true,
             player: Player :: new((100.0, 100.0)),
+            gardien: Gardien {
+                position: gardien_position.clone(),
+                targets: vec![
+                    Vecteur2D {x: gardien_position.x, y: gardien_position.y + 32.0 * 2.0},
+                    Vecteur2D {x: gardien_position.x, y: gardien_position.y - 32.0 * 2.0},
+                ],
+                index_current_target: 0,
+            },
             tilemap: Tilemap::new(Some(25), Some(13)), // 25 / 13
             ballon: Some(Ballon { position: Vecteur2D { x: 100.0, y: 100.0}, direction_du_shoot: None }),
             but: But { position: Vecteur2D { x: 32.0, y: 5.0 * 32.0}, size: Vecteur2D { x: 32.0, y: 32.0 * 3.0} },
@@ -125,6 +137,8 @@ impl event::EventHandler<ggez::GameError> for InGame {
                 ballon_a_jour
             }
         };
+
+        self.gardien.update_position(self.dt);
 
         Ok(())
     }
@@ -213,7 +227,7 @@ impl event::EventHandler<ggez::GameError> for InGame {
             &self.goal_image,
             DrawParam {
                 transform: Transform::Values {
-                    dest: Point2 {x: 32.0 * 2.0 + 16.0, y: 32.0 * 6.0 + 16.0},
+                    dest: Point2 {x: self.gardien.position.x, y: self.gardien.position.y},
                     rotation: 90.0 * std::f32::consts::PI / 180.0,
                     scale: Vector2 {x: 1.0, y: 1.0},
                     offset: Point2 {x: 0.5, y: 0.5},
