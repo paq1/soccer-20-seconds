@@ -57,7 +57,7 @@ impl InGame {
             .filter_map(|keycode| Input::from_keycode(keycode))
             .collect::<Vec<Input>>();
 
-        self.player.update_deplacement(keys, self.tilemap.layouts.get(1).unwrap(), self.tilemap.tile_size as f32, self.dt);
+        self.player.update_deplacement(keys, self.tilemap.layouts.get(0).unwrap(), self.tilemap.tile_size as f32, self.dt);
         self.update_activate_debug(_ctx);
 
         Ok(())

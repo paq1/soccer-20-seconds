@@ -4,8 +4,7 @@ use crate::models::vecteur2d::Vecteur2D;
 pub enum Tile {
     HerbeClaire,
     HerbeFoncee,
-    Mur,
-    Empty
+    Mur
 }
 
 pub struct TileLayout {
@@ -21,8 +20,7 @@ impl Tilemap {
     pub fn new(width: Option<u32>, height: Option<u32>) -> Self {
         Self {
             layouts: vec![
-                Self::create_grass_layout(&width.unwrap_or(100), &height.unwrap_or(50)),
-                Self::create_collide_layout(&width.unwrap_or(100), &height.unwrap_or(50))
+                Self::create_grass_layout(&width.unwrap_or(100), &height.unwrap_or(50))
             ],
             tile_size: 32
         }
@@ -34,10 +32,13 @@ impl Tilemap {
                 (0..*width)
                     .map(|column| {
                         let position = Vecteur2D { x: column as f32 * 32.0, y: line as f32 * 32.0 };
-                        if line % 2 == 0 {
-                            (Tile::HerbeClaire, position)
-                        } else {
+
+                        if line == 0 || column == 0 || line == height - 1 || column == width - 1 {
+                            (Tile::Mur, position)
+                        } else if line % 2 == 0 {
                             (Tile::HerbeFoncee, position)
+                        } else {
+                            (Tile::HerbeClaire, position)
                         }
                     })
                     .collect::<Vec<(Tile, Vecteur2D)>>()
@@ -48,6 +49,7 @@ impl Tilemap {
         }
     }
 
+    /*
     fn create_collide_layout(width: &u32, height: &u32) -> TileLayout {
         let layout_vec = (0..*height)
             .map(|line| {
@@ -67,6 +69,7 @@ impl Tilemap {
             tiles: layout_vec
         }
     }
+     */
 }
 
 impl TileLayout {
