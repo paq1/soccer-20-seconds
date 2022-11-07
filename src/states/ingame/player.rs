@@ -4,6 +4,7 @@ use crate::states::ingame::tilemap::TileLayout;
 
 const DEFAULT_POSITION: (f32, f32) = (0.0, 0.0);
 const VITESSE: f32 = 200.0;
+const PUISSANCE_SHOOT: f32 = 500.0;
 
 pub struct Player {
     pub position: (f32, f32),
@@ -28,7 +29,7 @@ impl Player {
     }
 
     pub fn update_deplacement(
-        &mut self, keys: Vec<Input>,
+        &mut self, keys: &Vec<Input>,
         collide_layout: &TileLayout,
         tile_size: f32,
         dt: f32
@@ -85,4 +86,18 @@ impl Player {
             self.angle
         }
     }
+
+    fn get_direction(&self) -> Vecteur2D {
+        Vecteur2D::from(self.position, self.angle)
+    }
+
+    pub fn shoot(&self) -> Vecteur2D {
+        let direction = self.get_direction();
+
+        Vecteur2D {
+            x: direction.x * PUISSANCE_SHOOT,
+            y: direction.y * PUISSANCE_SHOOT
+        }
+    }
+
 }
