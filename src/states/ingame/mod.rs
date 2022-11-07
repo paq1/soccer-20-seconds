@@ -27,6 +27,7 @@ pub struct InGame {
     but: But,
     score: u32,
     player_image: graphics::Image,
+    goal_image: graphics::Image,
     tiles_images: HashMap<Tile, graphics::Image>,
     ballon_image: graphics::Image,
     but_image: graphics::Image,
@@ -43,6 +44,7 @@ impl InGame {
             but: But { position: Vecteur2D { x: 32.0, y: 5.0 * 32.0}, size: Vecteur2D { x: 32.0, y: 32.0 * 3.0} },
             score: 0,
             player_image: graphics::Image::from_path(ctx, "/player-calvitie.png")?,
+            goal_image: graphics::Image::from_path(ctx, "/player-roux.png")?,
             tiles_images: HashMap::from([
                 (Tile::HerbeClaire, graphics::Image::from_path(ctx, "/tiles/tile-herbe-claire.png")?),
                 (Tile::HerbeFoncee, graphics::Image::from_path(ctx, "/tiles/tile-herbe-foncee.png")?),
@@ -204,7 +206,20 @@ impl event::EventHandler<ggez::GameError> for InGame {
                     offset: Point2 {x: 0.5, y: 0.5},
                 },
                 ..Default::default()
-                }
+            }
+        );
+
+        canvas.draw(
+            &self.goal_image,
+            DrawParam {
+                transform: Transform::Values {
+                    dest: Point2 {x: 32.0 * 2.0 + 16.0, y: 32.0 * 6.0 + 16.0},
+                    rotation: 90.0 * std::f32::consts::PI / 180.0,
+                    scale: Vector2 {x: 1.0, y: 1.0},
+                    offset: Point2 {x: 0.5, y: 0.5},
+                },
+                ..Default::default()
+            }
         );
 
         self.ballon
