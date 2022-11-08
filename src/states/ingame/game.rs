@@ -27,6 +27,8 @@ pub struct Game {
     ballon_image: graphics::Image,
     but_image: graphics::Image,
     son_shoot: audio::Source,
+    son_siiuu: audio::Source,
+    son_bruh: audio::Source,
     timer: f32,
     dt: f32
 }
@@ -59,6 +61,8 @@ impl Game {
             ballon_image: graphics::Image::from_path(ctx, "/ballon.png")?,
             but_image: graphics::Image::from_path(ctx, "/goal-left.png")?,
             son_shoot: audio::Source::new(ctx, "/sounds/shoot.wav")?,
+            son_siiuu: audio::Source::new(ctx, "/sounds/siiuu.mp3")?,
+            son_bruh: audio::Source::new(ctx, "/sounds/bruh.mp3")?,
             timer: 20.0,
             dt: 0.0
         })
@@ -82,7 +86,7 @@ impl Game {
     pub fn update(&mut self, _ctx: &mut ggez::Context) -> GameResult<State> {
         self.update_dt(_ctx);
         self.update_kb(_ctx)?;
-        self.update_ballon();
+        self.update_ballon(_ctx);
         self.gardien.update_position(self.dt);
 
         self.update_timer()
@@ -269,7 +273,7 @@ impl Game {
         }
     }
 
-    pub fn update_ballon(&mut self) {
+    pub fn update_ballon(&mut self, ctx: &mut ggez::Context) {
         self.ballon = match self.ballon {
             Some(ref mut ballon) => {
                 // on met a jour la position du ballon
@@ -277,16 +281,19 @@ impl Game {
 
                 // on verifie si le ballon est dans but
                 if self.but.is_in(&pos_a_jour.position) {
+                    self.son_siiuu.play(ctx).unwrap();
                     self.score += 1;
                     None // on supprime le ballon
                 }
                 // on verifie si le ballon est dans le gardien
                 else if self.gardien.catch_the_ball(ballon) {
-                    None // on supprime le ballon mais on ne marque pas de but
+                    self.son_bruh.play(ctx).unwrap();
 
+                    None // on supprime le ballon mais on ne marque pas de but
                 }
                 // on verifie si le ballon est en dehors du terrain
                 else if !self.tilemap.is_in(&pos_a_jour.position) {
+                    self.son_bruh.play(ctx).unwrap();
                     None // on supprime le ballon
                 }
 
