@@ -1,9 +1,10 @@
 use crate::models::vecteur2d::Vecteur2D;
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Ballon {
     pub position: Vecteur2D,
     pub direction_du_shoot: Option<Vecteur2D>,
+    pub est_au_centre: bool,
 }
 
 impl Ballon {
@@ -19,17 +20,24 @@ impl Ballon {
                 Ballon {
                     position: new_position,
                     direction_du_shoot: Some(direction.clone()),
+                    est_au_centre: false,
                 }
             },
             None => {
                 let direction = Vecteur2D::from(position_joueur, angle_joueur);
-                let position_ballon = Vecteur2D {
-                    x: position_joueur.0 + direction.x * 32.0,
-                    y: position_joueur.1 + direction.y * 32.0
-                };
-                Ballon {
-                    position: position_ballon,
-                    direction_du_shoot: None,
+
+                if !self.est_au_centre {
+                    let position_ballon = Vecteur2D {
+                        x: position_joueur.0 + direction.x * 32.0,
+                        y: position_joueur.1 + direction.y * 32.0
+                    };
+                    Ballon {
+                        position: position_ballon,
+                        direction_du_shoot: None,
+                        est_au_centre: false
+                    }
+                } else {
+                    self.clone()
                 }
             }
         }

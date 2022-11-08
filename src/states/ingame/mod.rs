@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use ggez::{event, GameResult, graphics};
 use ggez::glam::Vec2;
-use ggez::graphics::{DrawParam, Transform};
+use ggez::graphics::{DrawParam, Text, Transform};
 use ggez::mint::{Point2, Vector2};
 
 use player::Player;
@@ -52,7 +52,7 @@ impl InGame {
                 index_current_target: 0,
             },
             tilemap: Tilemap::new(Some(25), Some(13)), // 25 / 13
-            ballon: Some(Ballon { position: Vecteur2D { x: 100.0, y: 100.0}, direction_du_shoot: None }),
+            ballon: Some(Ballon { position: Vecteur2D { x: 100.0, y: 100.0}, direction_du_shoot: None, est_au_centre: false }),
             but: But { position: Vecteur2D { x: 32.0, y: 5.0 * 32.0}, size: Vecteur2D { x: 32.0, y: 32.0 * 3.0} },
             score: 0,
             player_image: graphics::Image::from_path(ctx, "/player-calvitie.png")?,
@@ -84,13 +84,17 @@ impl InGame {
         // on met a jour le shoot du joueur
         let shoot = self.player.shoot();
         if keys.contains(&Input::SHOOT) {
-
             self.ballon = self.ballon
                 .as_ref()
                 .map(|ballon| {
-                    Ballon {
-                        position: ballon.position.clone(),
-                        direction_du_shoot: Some(shoot)
+                    if ballon.direction_du_shoot.is_none() && !ballon.est_au_centre {
+                        Ballon {
+                            position: ballon.position.clone(),
+                            direction_du_shoot: Some(shoot),
+                            est_au_centre: false
+                        }
+                    } else {
+                        ballon.clone()
                     }
                 });
         }
@@ -99,8 +103,6 @@ impl InGame {
 
         Ok(())
     }
-
-
 
     pub fn update_dt(&mut self, ctx: &mut ggez::Context) {
         self.dt = ctx.time.delta().as_secs_f32();
@@ -111,6 +113,63 @@ impl InGame {
             self.show_debug = !self.show_debug;
         }
     }
+
+    pub fn update_ballon(&mut self) {
+        self.ballon = match self.ballon {
+            Some(ref mut ballon) => {
+                // on met a jour la position du ballon
+                let pos_a_jour = ballon.update_position(self.player.position, self.player.angle, self.dt);
+
+                // on verifie si le ballon est dans but
+                if self.but.is_in(&pos_a_jour.position) {
+                    self.score += 1;
+                    None // on supprime le ballon
+                }
+                // on verifie si le ballon est dans le gardien
+                else if self.gardien.catch_the_ball(ballon) {
+                    None // on supprime le ballon mais on ne marque pas de but
+
+                }
+                // on verifie si le ballon est en dehors du terrain
+                else if !self.tilemap.is_in(&pos_a_jour.position) {
+                    None // on supprime le ballon
+                }
+
+                else if pos_a_jour.est_au_centre {
+
+                    let distance_joueur_ballon = Vecteur2D {
+                        x: self.player.position.0 - pos_a_jour.position.x,
+                        y: self.player.position.1 - pos_a_jour.position.y
+                    }.norme();
+
+                    if distance_joueur_ballon < 32.0 {
+                        // le joueur récupère le ballon
+                        Some(
+                            Ballon {
+                                position: pos_a_jour.position,
+                                direction_du_shoot: None,
+                                est_au_centre: false
+                            }
+                        )
+                    }
+                    else {
+                        Some(ballon.clone())
+                    }
+                }
+                else {
+                    Some(pos_a_jour)
+                }
+            },
+            None => {
+                let position_centre = Vecteur2D {
+                    x: self.tilemap.size.0 as f32 * self.tilemap.tile_size as f32 / 2.0,
+                    y: self.tilemap.size.1 as f32 * self.tilemap.tile_size as f32 / 2.0
+                };
+
+                Some(Ballon { position: position_centre, direction_du_shoot: None, est_au_centre: true })
+            }
+        }
+    }
 }
 
 impl event::EventHandler<ggez::GameError> for InGame {
@@ -118,36 +177,9 @@ impl event::EventHandler<ggez::GameError> for InGame {
     fn update(&mut self, _ctx: &mut ggez::Context) -> GameResult {
         self.update_dt(_ctx);
         self.update_kb(_ctx)?;
-        let ballon_a_jour = self.ballon.as_ref().map(
-            |ballon| {
-                let pos_a_jour = ballon.update_position(self.player.position, self.player.angle, self.dt);
-
-                if self.but.is_in(&pos_a_jour.position) {
-                    self.score += 1;
-                    Ballon { position: pos_a_jour.position, direction_du_shoot: None }
-                } else {
-                    Ballon { position: pos_a_jour.position, direction_du_shoot: pos_a_jour.direction_du_shoot }
-                }
-            });
-
-        self.ballon = {
-            if self.score > 0 {
-                None
-            } else {
-                ballon_a_jour
-            }
-        };
+        self.update_ballon();
 
         self.gardien.update_position(self.dt);
-
-        match self.ballon {
-            Some(ref ballon) => {
-                if self.gardien.catch_the_ball(ballon) {
-                    self.ballon = None;
-                }
-            },
-            None => {}
-        }
 
         Ok(())
     }
@@ -156,9 +188,9 @@ impl event::EventHandler<ggez::GameError> for InGame {
         let mut canvas = graphics::Canvas::from_frame(
             ctx, graphics::Color::from([0.1, 0.2, 0.3, 1.0])
         );
-        let text = ggez::graphics::Text::new(format!("fps ({})", ctx.time.fps()));
-        let text_dt = ggez::graphics::Text::new(format!("dt ({})", self.dt));
-        let text_score = ggez::graphics::Text::new(format!("fra {} - 0 por", self.score));
+        let text = Text::new(format!("fps ({})", ctx.time.fps()));
+        let text_dt = Text::new(format!("dt ({})", self.dt));
+        let text_score = Text::new(format!("fra {} - 0 por", self.score));
 
         let win_width = ctx.gfx.size().0;
         let win_height = ctx.gfx.size().1;

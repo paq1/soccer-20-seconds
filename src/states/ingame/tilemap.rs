@@ -13,7 +13,8 @@ pub struct TileLayout {
 
 pub struct Tilemap {
     pub layouts: Vec<TileLayout>,
-    pub tile_size: u32
+    pub tile_size: u32,
+    pub size: (u32, u32)
 }
 
 impl Tilemap {
@@ -22,7 +23,8 @@ impl Tilemap {
             layouts: vec![
                 Self::create_grass_layout(&width.unwrap_or(100), &height.unwrap_or(50))
             ],
-            tile_size: 32
+            tile_size: 32,
+            size: (width.unwrap_or(100), height.unwrap_or(50))
         }
     }
 
@@ -70,6 +72,11 @@ impl Tilemap {
         }
     }
      */
+
+    pub fn is_in(&self, position: &Vecteur2D) -> bool {
+        position.x >= 0.0 && position.x <= self.size.0 as f32 * self.tile_size as f32 &&
+        position.y >= 0.0 && position.y <= self.size.1 as f32 * self.tile_size as f32
+    }
 }
 
 impl TileLayout {
