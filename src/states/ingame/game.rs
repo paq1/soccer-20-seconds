@@ -25,6 +25,7 @@ pub struct Game {
     tiles_images: HashMap<Tile, graphics::Image>,
     ballon_image: graphics::Image,
     but_image: graphics::Image,
+    timer: f32,
     dt: f32
 }
 
@@ -55,6 +56,7 @@ impl Game {
             ]),
             ballon_image: graphics::Image::from_path(ctx, "/ballon.png")?,
             but_image: graphics::Image::from_path(ctx, "/goal-left.png")?,
+            timer: 20.0,
             dt: 0.0
         })
     }
@@ -65,13 +67,22 @@ impl Game {
         Vecteur2D { x, y }
     }
 
+    pub fn update_timer(&mut self) -> GameResult<State> {
+        self.timer -= self.dt;
+        if self.timer <= 0.0 {
+            Ok(State::Menu)
+        } else {
+            Ok(State::Game)
+        }
+    }
+
     pub fn update(&mut self, _ctx: &mut ggez::Context) -> GameResult<State> {
         self.update_dt(_ctx);
         self.update_kb(_ctx)?;
         self.update_ballon();
         self.gardien.update_position(self.dt);
 
-        Ok(State::Game)
+        self.update_timer()
     }
 
     pub fn draw(&mut self, ctx: &mut ggez::Context) -> GameResult {
@@ -81,6 +92,7 @@ impl Game {
         let text = Text::new(format!("fps ({})", ctx.time.fps()));
         let text_dt = Text::new(format!("dt ({})", self.dt));
         let text_score = Text::new(format!("fra {} - 0 por", self.score));
+        let text_temps = Text::new(format!("temps {}", self.timer as u32));
 
         let win_width = ctx.gfx.size().0;
         let win_height = ctx.gfx.size().1;
@@ -198,6 +210,7 @@ impl Game {
         );
 
         canvas.draw(&text_score, Vec2 {x: 32.0 * 11.0, y: 0.0});
+        canvas.draw(&text_temps, Vec2 {x: 32.0 * 12.0, y: 16.0});
 
         if self.show_debug {
             canvas.draw(&text, Vec2 { x: 0.0, y: 0.0 });
