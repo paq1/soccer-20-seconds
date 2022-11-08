@@ -46,8 +46,8 @@ impl InGame {
             gardien: Gardien {
                 position: gardien_position.clone(),
                 targets: vec![
-                    Vecteur2D {x: gardien_position.x, y: gardien_position.y + 32.0 * 2.0},
-                    Vecteur2D {x: gardien_position.x, y: gardien_position.y - 32.0 * 2.0},
+                    Vecteur2D {x: gardien_position.x, y: gardien_position.y + 32.0 * 1.0},
+                    Vecteur2D {x: gardien_position.x, y: gardien_position.y - 32.0 * 1.0},
                 ],
                 index_current_target: 0,
             },
@@ -139,6 +139,15 @@ impl event::EventHandler<ggez::GameError> for InGame {
         };
 
         self.gardien.update_position(self.dt);
+
+        match self.ballon {
+            Some(ref ballon) => {
+                if self.gardien.catch_the_ball(ballon) {
+                    self.ballon = None;
+                }
+            },
+            None => {}
+        }
 
         Ok(())
     }

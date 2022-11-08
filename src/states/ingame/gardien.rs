@@ -1,4 +1,5 @@
 use crate::models::vecteur2d::Vecteur2D;
+use crate::states::ingame::ballon::Ballon;
 
 pub struct Gardien {
     pub position: Vecteur2D,
@@ -31,7 +32,20 @@ impl Gardien {
 
         self.position.x += v_unitaire.x * 100.0 * dt;
         self.position.y += v_unitaire.y * 100.0 * dt;
+    }
 
-        println!("Gardien position: {:?}", self.position);
+    pub fn catch_the_ball(&mut self, ballon: &Ballon) -> bool {
+        let vecteur_ballon_gardien = Vecteur2D {
+            x: ballon.position.x - self.position.x,
+            y: ballon.position.y - self.position.y,
+        };
+
+        let distance = vecteur_ballon_gardien.norme();
+
+        if distance < 16.0 {
+            println!("Gardien a attrapé le ballon");
+        }
+
+        distance < 16.0
     }
 }
