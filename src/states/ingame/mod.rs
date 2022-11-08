@@ -60,6 +60,7 @@ impl event::EventHandler<ggez::GameError> for InGame {
 
                 if self.end.restart {
                     self.game = Game::load(_ctx).unwrap();
+                    self.end.restart = false;
                     self.state = State::Menu;
                 }
 
