@@ -42,7 +42,7 @@ impl InGame {
         let gardien_position = Vecteur2D {x: 32.0 * 2.0 + 16.0, y: 32.0 * 6.0 + 16.0};
         let state = InGame {
             show_debug: true,
-            player: Player :: new((100.0, 100.0)),
+            player: Player :: new((32.0 * 16.0 + 16.0, 32.0 * 6.0 + 16.0)),
             gardien: Gardien {
                 position: gardien_position.clone(),
                 targets: vec![

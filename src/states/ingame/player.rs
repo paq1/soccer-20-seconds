@@ -24,7 +24,7 @@ impl Player {
     pub fn new(position: (f32, f32)) -> Self {
         Self {
             position,
-            angle: 0.0,
+            angle: 180.0,
         }
     }
 
