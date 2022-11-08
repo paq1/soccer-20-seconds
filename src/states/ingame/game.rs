@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-use ggez::{GameResult, graphics};
+use ggez::{audio, GameResult, graphics};
+use ggez::audio::SoundSource;
 use ggez::glam::Vec2;
 use ggez::graphics::{DrawParam, Text, Transform};
 use ggez::mint::{Point2, Vector2};
@@ -25,6 +26,7 @@ pub struct Game {
     tiles_images: HashMap<Tile, graphics::Image>,
     ballon_image: graphics::Image,
     but_image: graphics::Image,
+    son_shoot: audio::Source,
     timer: f32,
     dt: f32
 }
@@ -56,6 +58,7 @@ impl Game {
             ]),
             ballon_image: graphics::Image::from_path(ctx, "/ballon.png")?,
             but_image: graphics::Image::from_path(ctx, "/goal-left.png")?,
+            son_shoot: audio::Source::new(ctx, "/sounds/shoot.wav")?,
             timer: 20.0,
             dt: 0.0
         })
@@ -239,6 +242,7 @@ impl Game {
                 .as_ref()
                 .map(|ballon| {
                     if ballon.direction_du_shoot.is_none() && !ballon.est_au_centre {
+                        self.son_shoot.play(_ctx).unwrap();
                         Ballon {
                             position: ballon.position.clone(),
                             direction_du_shoot: Some(shoot),
