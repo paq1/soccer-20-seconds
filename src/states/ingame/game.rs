@@ -19,7 +19,7 @@ pub struct Game {
     tilemap: Tilemap,
     ballon: Option<Ballon>,
     but: But,
-    score: u32,
+    pub score: u32,
     player_image: graphics::Image,
     goal_image: graphics::Image,
     tiles_images: HashMap<Tile, graphics::Image>,
@@ -70,7 +70,7 @@ impl Game {
     pub fn update_timer(&mut self) -> GameResult<State> {
         self.timer -= self.dt;
         if self.timer <= 0.0 {
-            Ok(State::Menu)
+            Ok(State::End)
         } else {
             Ok(State::Game)
         }
