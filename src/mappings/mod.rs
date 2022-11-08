@@ -8,7 +8,7 @@ impl Input {
             KeyCode::D => Some(Input::RIGHT),
             KeyCode::S => Some(Input::DOWN),
             KeyCode::Q => Some(Input::LEFT),
-            KeyCode::Space => Some(Input::SHOOT),
+            KeyCode::Space => Some(Input::SPACE),
             _ => None
         }
     }

@@ -6,5 +6,5 @@ pub enum Input {
     RIGHT,
     DOWN,
     LEFT,
-    SHOOT,
+    SPACE,
 }
