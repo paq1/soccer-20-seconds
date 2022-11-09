@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use ggez::{GameResult, graphics};
-use crate::states::mainstate::tilemap::Tile;
+use crate::states::mainstate::game_element::tilemap::Tile;
 
 pub struct GameSprites {
     pub player_image: graphics::Image,

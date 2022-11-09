@@ -6,15 +6,11 @@ use crate::states::mainstate::menu::Menu;
 use crate::states::mainstate::end::End;
 
 
-mod player;
-mod tilemap;
-mod ball;
-mod but;
-mod gardien;
 mod game;
 mod menu;
 mod end;
 mod assets;
+mod game_element;
 
 #[derive(Debug)]
 pub enum State {

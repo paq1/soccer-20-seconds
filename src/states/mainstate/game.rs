@@ -5,14 +5,14 @@ use ggez::graphics::{Canvas, DrawParam, Text, Transform};
 use ggez::mint::{Point2, Vector2};
 use crate::models::Input;
 use crate::models::vecteur2d::Vecteur2D;
-use crate::states::mainstate::ball::Ballon;
-use crate::states::mainstate::but::But;
-use crate::states::mainstate::gardien::Gardien;
-use crate::states::mainstate::player::Player;
+use crate::states::mainstate::game_element::ball::Ballon;
+use crate::states::mainstate::game_element::but::But;
+use crate::states::mainstate::game_element::gardien::Gardien;
+use crate::states::mainstate::game_element::player::Player;
 use crate::states::mainstate::assets::sounds::GameSounds;
 use crate::states::mainstate::assets::sprites::GameSprites;
+use crate::states::mainstate::game_element::tilemap::Tilemap;
 use crate::states::mainstate::State;
-use crate::states::mainstate::tilemap::Tilemap;
 
 pub struct Game {
     show_debug: bool,
