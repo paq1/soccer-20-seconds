@@ -8,7 +8,7 @@ use crate::states::mainstate::end::End;
 
 mod player;
 mod tilemap;
-mod ballon;
+mod ball;
 mod but;
 mod gardien;
 mod game;

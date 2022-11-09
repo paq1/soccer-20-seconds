@@ -5,7 +5,7 @@ use ggez::graphics::{Canvas, DrawParam, Text, Transform};
 use ggez::mint::{Point2, Vector2};
 use crate::models::Input;
 use crate::models::vecteur2d::Vecteur2D;
-use crate::states::mainstate::ballon::Ballon;
+use crate::states::mainstate::ball::Ballon;
 use crate::states::mainstate::but::But;
 use crate::states::mainstate::gardien::Gardien;
 use crate::states::mainstate::player::Player;
