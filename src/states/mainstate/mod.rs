@@ -1,9 +1,9 @@
 
 use ggez::{event, GameResult};
 
-use crate::states::ingame::game::Game;
-use crate::states::ingame::menu::Menu;
-use crate::states::ingame::end::End;
+use crate::states::mainstate::game::Game;
+use crate::states::mainstate::menu::Menu;
+use crate::states::mainstate::end::End;
 
 
 mod player;
@@ -14,6 +14,7 @@ mod gardien;
 mod game;
 mod menu;
 mod end;
+mod sprites;
 
 #[derive(Debug)]
 pub enum State {
@@ -22,17 +23,17 @@ pub enum State {
     End
 }
 
-pub struct InGame {
+pub struct MainState {
     game: Game,
     menu: Menu,
     end: End,
     state: State,
 }
 
-impl InGame {
+impl MainState {
     pub fn new(ctx: &mut ggez::Context) -> GameResult<Self> {
 
-        let state = InGame {
+        let state = MainState {
             game: Game::load(ctx)?,
             menu: Menu::load(ctx)?,
             end: End::load(ctx)?,
@@ -43,7 +44,7 @@ impl InGame {
     }
 }
 
-impl event::EventHandler<ggez::GameError> for InGame {
+impl event::EventHandler<ggez::GameError> for MainState {
     fn update(&mut self, _ctx: &mut ggez::Context) -> GameResult {
 
         match self.state {

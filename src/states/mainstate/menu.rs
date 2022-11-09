@@ -2,7 +2,7 @@ use ggez::{GameResult, graphics};
 use ggez::graphics::{DrawParam, Text, Transform};
 use ggez::mint::{Point2, Vector2};
 use crate::models::Input;
-use crate::states::ingame::State;
+use crate::states::mainstate::State;
 
 pub struct Menu {
     image_ballon: graphics::Image,

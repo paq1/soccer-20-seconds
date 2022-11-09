@@ -1,5 +1,5 @@
 use crate::models::vecteur2d::Vecteur2D;
-use crate::states::ingame::ballon::Ballon;
+use crate::states::mainstate::ballon::Ballon;
 
 pub struct Gardien {
     pub position: Vecteur2D,

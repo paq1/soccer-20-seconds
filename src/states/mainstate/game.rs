@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use ggez::{audio, GameResult, graphics};
 use ggez::audio::SoundSource;
 use ggez::glam::Vec2;
@@ -6,12 +5,13 @@ use ggez::graphics::{Canvas, DrawParam, Text, Transform};
 use ggez::mint::{Point2, Vector2};
 use crate::models::Input;
 use crate::models::vecteur2d::Vecteur2D;
-use crate::states::ingame::ballon::Ballon;
-use crate::states::ingame::but::But;
-use crate::states::ingame::gardien::Gardien;
-use crate::states::ingame::player::Player;
-use crate::states::ingame::State;
-use crate::states::ingame::tilemap::{Tile, Tilemap};
+use crate::states::mainstate::ballon::Ballon;
+use crate::states::mainstate::but::But;
+use crate::states::mainstate::gardien::Gardien;
+use crate::states::mainstate::player::Player;
+use crate::states::mainstate::sprites::GameSprites;
+use crate::states::mainstate::State;
+use crate::states::mainstate::tilemap::{Tile, Tilemap};
 
 pub struct Game {
     show_debug: bool,
@@ -21,15 +21,7 @@ pub struct Game {
     ballon: Option<Ballon>,
     but: But,
     pub score: u32,
-    player_image: graphics::Image,
-    goal_image: graphics::Image,
-    tiles_images: HashMap<Tile, graphics::Image>,
-    ballon_image: graphics::Image,
-    but_image: graphics::Image,
-    key_arrow_image: graphics::Image,
-    key_arrow_pressed_image: graphics::Image,
-    key_space_image: graphics::Image,
-    key_space_pressed_image: graphics::Image,
+    sprites: GameSprites,
     son_shoot: audio::Source,
     son_siiuu: audio::Source,
     son_bruh: audio::Source,
@@ -55,19 +47,7 @@ impl Game {
             ballon: Some(Ballon { position: Game::position_centre( Vecteur2D {x: 25.0, y: 13.0}, 32.0 ), direction_du_shoot: None, est_au_centre: true }),
             but: But { position: Vecteur2D { x: 32.0, y: 5.0 * 32.0}, size: Vecteur2D { x: 32.0, y: 32.0 * 3.0} },
             score: 0,
-            player_image: graphics::Image::from_path(ctx, "/player-calvitie.png")?,
-            goal_image: graphics::Image::from_path(ctx, "/player-roux.png")?,
-            tiles_images: HashMap::from([
-                (Tile::HerbeClaire, graphics::Image::from_path(ctx, "/tiles/tile-herbe-claire.png")?),
-                (Tile::HerbeFoncee, graphics::Image::from_path(ctx, "/tiles/tile-herbe-foncee.png")?),
-                (Tile::Mur, graphics::Image::from_path(ctx, "/tiles/brique.png")?),
-            ]),
-            ballon_image: graphics::Image::from_path(ctx, "/ballon.png")?,
-            but_image: graphics::Image::from_path(ctx, "/goal-left.png")?,
-            key_arrow_image: graphics::Image::from_path(ctx, "/key-arrow.png")?,
-            key_arrow_pressed_image: graphics::Image::from_path(ctx, "/key-arrow-pressed.png")?,
-            key_space_image: graphics::Image::from_path(ctx, "/key-space.png")?,
-            key_space_pressed_image: graphics::Image::from_path(ctx, "/key-space-pressed.png")?,
+            sprites: GameSprites::new(ctx)?,
             son_shoot: audio::Source::new(ctx, "/sounds/shoot.wav")?,
             son_siiuu: audio::Source::new(ctx, "/sounds/siiuu.mp3")?,
             son_bruh: audio::Source::new(ctx, "/sounds/bruh.mp3")?,
@@ -139,7 +119,7 @@ impl Game {
                 for l in 0..index_max_l {
                     for c in 0..index_max_c {
                         let tile = &layout.tiles[l][c].0;
-                        match self.tiles_images.get(tile) {
+                        match self.sprites.tiles_images.get(tile) {
                             Some(image) => {
                                 let tile_position = Point2 {
                                     x: c as f32 * self.tilemap.tile_size as f32,
@@ -168,7 +148,7 @@ impl Game {
             });
 
         canvas.draw(
-            &self.player_image,
+            &self.sprites.player_image,
             DrawParam {
                 transform: Transform::Values {
                     dest: Point2 {x: self.player.position.0, y: self.player.position.1},
@@ -181,7 +161,7 @@ impl Game {
         );
 
         canvas.draw(
-            &self.goal_image,
+            &self.sprites.goal_image,
             DrawParam {
                 transform: Transform::Values {
                     dest: Point2 {x: self.gardien.position.x, y: self.gardien.position.y},
@@ -197,7 +177,7 @@ impl Game {
             .as_ref()
             .map(|ballon| {
                 canvas.draw(
-                    &self.ballon_image,
+                    &self.sprites.ballon_image,
                     DrawParam {
                         transform: Transform::Values {
                             dest: Point2 {x: ballon.position.x, y: ballon.position.y},
@@ -211,7 +191,7 @@ impl Game {
             });
 
         canvas.draw(
-            &self.but_image,
+            &self.sprites.but_image,
             DrawParam {
                 transform: Transform::Values {
                     dest: Point2 {x: self.but.position.x, y: self.but.position.y},
@@ -230,7 +210,6 @@ impl Game {
 
         if self.show_debug {
             canvas.draw(&text_fps, Vec2 { x: 0.0, y: 0.0 });
-            // canvas.draw(&text_dt, Vec2 { x: 0.0, y: 32.0 });
         }
 
         canvas.finish(ctx)
@@ -242,7 +221,7 @@ impl Game {
         // touche espace
         if touches.contains(&Input::SPACE) {
             canvas.draw(
-                &self.key_space_pressed_image,
+                &self.sprites.key_space_pressed_image,
                 DrawParam {
                     transform: Transform::Values {
                         dest: Point2 {x: 400.0, y: 500.0},
@@ -255,7 +234,7 @@ impl Game {
             );
         } else {
             canvas.draw(
-                &self.key_space_image,
+                &self.sprites.key_space_image,
                 DrawParam {
                     transform: Transform::Values {
                         dest: Point2 {x: 400.0, y: 500.0},
@@ -271,7 +250,7 @@ impl Game {
         // UP
         if touches.contains(&Input::UP) {
             canvas.draw(
-                &self.key_arrow_pressed_image,
+                &self.sprites.key_arrow_pressed_image,
                 DrawParam {
                     transform: Transform::Values {
                         dest: Point2 {x: 700.0, y: 500.0 - 32.0},
@@ -284,7 +263,7 @@ impl Game {
             );
         } else {
             canvas.draw(
-                &self.key_arrow_image,
+                &self.sprites.key_arrow_image,
                 DrawParam {
                     transform: Transform::Values {
                         dest: Point2 {x: 700.0, y: 500.0 - 32.0},
@@ -300,7 +279,7 @@ impl Game {
         // DOWN
         if touches.contains(&Input::DOWN) {
             canvas.draw(
-                &self.key_arrow_pressed_image,
+                &self.sprites.key_arrow_pressed_image,
                 DrawParam {
                     transform: Transform::Values {
                         dest: Point2 {x: 700.0, y: 500.0 + 2.0},
@@ -313,7 +292,7 @@ impl Game {
             );
         } else {
             canvas.draw(
-                &self.key_arrow_image,
+                &self.sprites.key_arrow_image,
                 DrawParam {
                     transform: Transform::Values {
                         dest: Point2 {x: 700.0, y: 500.0 + 2.0},
@@ -329,7 +308,7 @@ impl Game {
         // RIGHT
         if touches.contains(&Input::RIGHT) {
             canvas.draw(
-                &self.key_arrow_pressed_image,
+                &self.sprites.key_arrow_pressed_image,
                 DrawParam {
                     transform: Transform::Values {
                         dest: Point2 {x: 700.0 + 34.0, y: 500.0 + 2.0},
@@ -342,7 +321,7 @@ impl Game {
             );
         } else {
             canvas.draw(
-                &self.key_arrow_image,
+                &self.sprites.key_arrow_image,
                 DrawParam {
                     transform: Transform::Values {
                         dest: Point2 {x: 700.0 + 34.0, y: 500.0 + 2.0},
@@ -358,7 +337,7 @@ impl Game {
         // LEFT
         if touches.contains(&Input::LEFT) {
             canvas.draw(
-                &self.key_arrow_pressed_image,
+                &self.sprites.key_arrow_pressed_image,
                 DrawParam {
                     transform: Transform::Values {
                         dest: Point2 {x: 700.0 - 34.0, y: 500.0 + 2.0},
@@ -371,7 +350,7 @@ impl Game {
             );
         } else {
             canvas.draw(
-                &self.key_arrow_image,
+                &self.sprites.key_arrow_image,
                 DrawParam {
                     transform: Transform::Values {
                         dest: Point2 {x: 700.0 - 34.0, y: 500.0 + 2.0},

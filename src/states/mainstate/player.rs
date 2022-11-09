@@ -1,6 +1,6 @@
 use crate::models::Input;
 use crate::models::vecteur2d::Vecteur2D;
-use crate::states::ingame::tilemap::TileLayout;
+use crate::states::mainstate::tilemap::TileLayout;
 
 const DEFAULT_POSITION: (f32, f32) = (0.0, 0.0);
 const VITESSE: f32 = 200.0;
