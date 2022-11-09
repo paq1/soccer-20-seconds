@@ -9,8 +9,8 @@ use crate::states::mainstate::ball::Ballon;
 use crate::states::mainstate::but::But;
 use crate::states::mainstate::gardien::Gardien;
 use crate::states::mainstate::player::Player;
-use crate::states::mainstate::sounds::GameSounds;
-use crate::states::mainstate::sprites::GameSprites;
+use crate::states::mainstate::assets::sounds::GameSounds;
+use crate::states::mainstate::assets::sprites::GameSprites;
 use crate::states::mainstate::State;
 use crate::states::mainstate::tilemap::Tilemap;
 

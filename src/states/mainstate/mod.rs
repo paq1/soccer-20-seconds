@@ -14,8 +14,7 @@ mod gardien;
 mod game;
 mod menu;
 mod end;
-mod sprites;
-mod sounds;
+mod assets;
 
 #[derive(Debug)]
 pub enum State {
