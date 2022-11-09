@@ -7,4 +7,5 @@ pub enum Input {
     DOWN,
     LEFT,
     SPACE,
+    R
 }

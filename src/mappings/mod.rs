@@ -4,11 +4,12 @@ use ggez::input::keyboard::KeyCode;
 impl Input {
     pub fn from_keycode(keycode: &KeyCode) -> Option<Input> {
         match keycode {
-            KeyCode::Z => Some(Input::UP),
-            KeyCode::D => Some(Input::RIGHT),
-            KeyCode::S => Some(Input::DOWN),
-            KeyCode::Q => Some(Input::LEFT),
+            KeyCode::Up => Some(Input::UP),
+            KeyCode::Right => Some(Input::RIGHT),
+            KeyCode::Down => Some(Input::DOWN),
+            KeyCode::Left => Some(Input::LEFT),
             KeyCode::Space => Some(Input::SPACE),
+            KeyCode::R => Some(Input::R),
             _ => None
         }
     }

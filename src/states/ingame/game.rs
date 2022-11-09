@@ -98,13 +98,12 @@ impl Game {
         );
         let text = Text::new(format!("fps ({})", ctx.time.fps()));
         let text_dt = Text::new(format!("dt ({})", self.dt));
-        let text_score = Text::new(format!("fra {} - 0 por", self.score));
+        let text_score = Text::new(format!("fra {} - 2 por", self.score));
         let text_temps = Text::new(format!("temps {}", self.timer as u32));
 
         let win_width = ctx.gfx.size().0;
         let win_height = ctx.gfx.size().1;
 
-        // todo mettre a jour si notion de camera
         self.tilemap.layouts
             .iter()
             .for_each(|layout| {
