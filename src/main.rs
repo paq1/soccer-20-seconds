@@ -15,6 +15,6 @@ pub fn main() -> GameResult {
     let (mut ctx, event_loop) = cb.build()?;
     let state = InGame::new(&mut ctx)?;
 
-    ctx.gfx.set_window_title("seed ggez");
+    ctx.gfx.set_window_title("soccer-20-seconds -- @paq1");
     event::run(ctx, event_loop, state)
 }
