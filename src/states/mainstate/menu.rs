@@ -2,11 +2,11 @@ use ggez::{GameResult, graphics};
 use ggez::graphics::{DrawParam, Text, Transform};
 use ggez::mint::{Point2, Vector2};
 use crate::models::Input;
+use crate::states::mainstate::sprites::MenuSprites;
 use crate::states::mainstate::State;
 
 pub struct Menu {
-    image_ballon: graphics::Image,
-    image_titre: graphics::Image,
+    sprites: MenuSprites,
     angle: f32,
 }
 
@@ -14,8 +14,7 @@ impl Menu {
 
     pub fn load(_ctx: &mut ggez::Context) -> GameResult<Self> {
         Ok(Self {
-            image_ballon: graphics::Image::from_path(_ctx, "/menu_ballon.png")?,
-            image_titre: graphics::Image::from_path(_ctx, "/titre.png")?,
+            sprites: MenuSprites::new(_ctx)?,
             angle: 0.0
         })
     }
@@ -53,7 +52,7 @@ impl Menu {
         let win_height = ctx.gfx.size().1;
 
         canvas.draw(
-            &self.image_ballon,
+            &self.sprites.image_ballon,
             DrawParam {
                 transform: Transform::Values {
                     dest: Point2 {x: win_width / 2.0, y: win_height / 2.0},
@@ -66,7 +65,7 @@ impl Menu {
         );
 
         canvas.draw(
-            &self.image_titre,
+            &self.sprites.image_titre,
             DrawParam {
                 transform: Transform::Values {
                     dest: Point2 {x: win_width / 2.0, y: 32.0},

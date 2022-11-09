@@ -34,3 +34,18 @@ impl GameSprites {
         Ok(sprites)
     }
 }
+
+pub struct MenuSprites {
+    pub image_ballon: graphics::Image,
+    pub image_titre: graphics::Image,
+}
+
+impl MenuSprites {
+    pub fn new(ctx: &mut ggez::Context) -> GameResult<Self> {
+        let sprites = Self {
+            image_ballon: graphics::Image::from_path(ctx, "/menu_ballon.png")?,
+            image_titre: graphics::Image::from_path(ctx, "/titre.png")?,
+        };
+        Ok(sprites)
+    }
+}

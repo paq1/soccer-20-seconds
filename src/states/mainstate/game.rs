@@ -11,7 +11,7 @@ use crate::states::mainstate::gardien::Gardien;
 use crate::states::mainstate::player::Player;
 use crate::states::mainstate::sprites::GameSprites;
 use crate::states::mainstate::State;
-use crate::states::mainstate::tilemap::{Tile, Tilemap};
+use crate::states::mainstate::tilemap::Tilemap;
 
 pub struct Game {
     show_debug: bool,
