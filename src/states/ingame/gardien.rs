@@ -12,26 +12,30 @@ impl Gardien {
     pub fn update_position(&mut self, dt: f32) {
         let target = self.targets.get(self.index_current_target as usize).unwrap();
 
-        let v = Vecteur2D {
+        let v_target_gardien = Vecteur2D {
             x: target.x - self.position.x,
             y: target.y - self.position.y,
         };
 
-        let distance = v.norme();
+        let distance_target_gardien = v_target_gardien.norme();
 
-        if distance < 1.0 {
-            let new_index = self.index_current_target + 1;
-            if new_index >= self.targets.len() as u32 {
-                self.index_current_target = 0;
-            } else {
-                self.index_current_target = new_index;
-            }
+        if distance_target_gardien < 5.0 {
+            let new_index = (self.index_current_target + 1) % (self.targets.len() as u32);
+            self.index_current_target = new_index;
         }
 
-        let v_unitaire = v.unitaire();
+        let new_target = self.targets.get(self.index_current_target as usize).unwrap();
+        let v_target_gardien = Vecteur2D {
+            x: new_target.x - self.position.x,
+            y: new_target.y - self.position.y,
+        };
 
-        self.position.x += v_unitaire.x * 100.0 * dt;
-        self.position.y += v_unitaire.y * 100.0 * dt;
+        let v_target_gardien_unitaire = v_target_gardien.unitaire();
+
+        self.position.x += v_target_gardien_unitaire.x * 100.0 * dt;
+        self.position.y += v_target_gardien_unitaire.y * 100.0 * dt;
+
+        println!("{}", v_target_gardien_unitaire.y * 100.0);
     }
 
     pub fn catch_the_ball(&mut self, ballon: &Ballon) -> bool {
