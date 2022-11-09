@@ -104,10 +104,10 @@ impl Game {
         let mut canvas = Canvas::from_frame(
             ctx, graphics::Color::from([0.1, 0.2, 0.3, 1.0])
         );
-        let text = Text::new(format!("fps ({})", ctx.time.fps()));
-        let text_dt = Text::new(format!("dt ({})", self.dt));
+        let text_fps = Text::new(format!("fps ({})", ctx.time.fps() as i32));
+        // let text_dt = Text::new(format!("dt ({})", self.dt));
         let text_score = Text::new(format!("fra {} - 2 por", self.score));
-        let text_temps = Text::new(format!("temps {}", self.timer as u32));
+        let text_temps = Text::new(format!("time {}", self.timer as u32));
 
         let win_width = ctx.gfx.size().0;
         let win_height = ctx.gfx.size().1;
@@ -229,8 +229,8 @@ impl Game {
         self.draw_keys(ctx, &mut canvas);
 
         if self.show_debug {
-            canvas.draw(&text, Vec2 { x: 0.0, y: 0.0 });
-            canvas.draw(&text_dt, Vec2 { x: 0.0, y: 32.0 });
+            canvas.draw(&text_fps, Vec2 { x: 0.0, y: 0.0 });
+            // canvas.draw(&text_dt, Vec2 { x: 0.0, y: 32.0 });
         }
 
         canvas.finish(ctx)
