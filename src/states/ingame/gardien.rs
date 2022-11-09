@@ -34,8 +34,6 @@ impl Gardien {
 
         self.position.x += v_target_gardien_unitaire.x * 100.0 * dt;
         self.position.y += v_target_gardien_unitaire.y * 100.0 * dt;
-
-        println!("{}", v_target_gardien_unitaire.y * 100.0);
     }
 
     pub fn catch_the_ball(&mut self, ballon: &Ballon) -> bool {
@@ -45,10 +43,6 @@ impl Gardien {
         };
 
         let distance = vecteur_ballon_gardien.norme();
-
-        if distance < 16.0 {
-            println!("Gardien a attrapé le ballon");
-        }
 
         distance < 16.0
     }
