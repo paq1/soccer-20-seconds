@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use ggez::{audio, GameResult, graphics};
 use ggez::audio::SoundSource;
 use ggez::glam::Vec2;
-use ggez::graphics::{DrawParam, Text, Transform};
+use ggez::graphics::{Canvas, DrawParam, Text, Transform};
 use ggez::mint::{Point2, Vector2};
 use crate::models::Input;
 use crate::models::vecteur2d::Vecteur2D;
@@ -26,6 +26,10 @@ pub struct Game {
     tiles_images: HashMap<Tile, graphics::Image>,
     ballon_image: graphics::Image,
     but_image: graphics::Image,
+    key_arrow_image: graphics::Image,
+    key_arrow_pressed_image: graphics::Image,
+    key_space_image: graphics::Image,
+    key_space_pressed_image: graphics::Image,
     son_shoot: audio::Source,
     son_siiuu: audio::Source,
     son_bruh: audio::Source,
@@ -60,6 +64,10 @@ impl Game {
             ]),
             ballon_image: graphics::Image::from_path(ctx, "/ballon.png")?,
             but_image: graphics::Image::from_path(ctx, "/goal-left.png")?,
+            key_arrow_image: graphics::Image::from_path(ctx, "/key-arrow.png")?,
+            key_arrow_pressed_image: graphics::Image::from_path(ctx, "/key-arrow-pressed.png")?,
+            key_space_image: graphics::Image::from_path(ctx, "/key-space.png")?,
+            key_space_pressed_image: graphics::Image::from_path(ctx, "/key-space-pressed.png")?,
             son_shoot: audio::Source::new(ctx, "/sounds/shoot.wav")?,
             son_siiuu: audio::Source::new(ctx, "/sounds/siiuu.mp3")?,
             son_bruh: audio::Source::new(ctx, "/sounds/bruh.mp3")?,
@@ -93,7 +101,7 @@ impl Game {
     }
 
     pub fn draw(&mut self, ctx: &mut ggez::Context) -> GameResult {
-        let mut canvas = graphics::Canvas::from_frame(
+        let mut canvas = Canvas::from_frame(
             ctx, graphics::Color::from([0.1, 0.2, 0.3, 1.0])
         );
         let text = Text::new(format!("fps ({})", ctx.time.fps()));
@@ -218,6 +226,8 @@ impl Game {
         canvas.draw(&text_score, Vec2 {x: 32.0 * 11.0, y: 0.0});
         canvas.draw(&text_temps, Vec2 {x: 32.0 * 12.0, y: 16.0});
 
+        self.draw_keys(ctx, &mut canvas);
+
         if self.show_debug {
             canvas.draw(&text, Vec2 { x: 0.0, y: 0.0 });
             canvas.draw(&text_dt, Vec2 { x: 0.0, y: 32.0 });
@@ -226,15 +236,159 @@ impl Game {
         canvas.finish(ctx)
     }
 
+    fn draw_keys(&mut self, ctx: &mut ggez::Context,canvas: &mut Canvas) {
+
+        let touches = self.get_keys(ctx);
+        // touche espace
+        if touches.contains(&Input::SPACE) {
+            canvas.draw(
+                &self.key_space_pressed_image,
+                DrawParam {
+                    transform: Transform::Values {
+                        dest: Point2 {x: 400.0, y: 500.0},
+                        rotation: 0.0,
+                        scale: Vector2 {x: 1.0, y: 1.0},
+                        offset: Point2 {x: 0.5, y: 0.5},
+                    },
+                    ..Default::default()
+                }
+            );
+        } else {
+            canvas.draw(
+                &self.key_space_image,
+                DrawParam {
+                    transform: Transform::Values {
+                        dest: Point2 {x: 400.0, y: 500.0},
+                        rotation: 0.0,
+                        scale: Vector2 {x: 1.0, y: 1.0},
+                        offset: Point2 {x: 0.5, y: 0.5},
+                    },
+                    ..Default::default()
+                }
+            );
+        }
+
+        // UP
+        if touches.contains(&Input::UP) {
+            canvas.draw(
+                &self.key_arrow_pressed_image,
+                DrawParam {
+                    transform: Transform::Values {
+                        dest: Point2 {x: 700.0, y: 500.0 - 32.0},
+                        rotation: 0.0,
+                        scale: Vector2 {x: 1.0, y: 1.0},
+                        offset: Point2 {x: 0.5, y: 0.5},
+                    },
+                    ..Default::default()
+                }
+            );
+        } else {
+            canvas.draw(
+                &self.key_arrow_image,
+                DrawParam {
+                    transform: Transform::Values {
+                        dest: Point2 {x: 700.0, y: 500.0 - 32.0},
+                        rotation: 0.0,
+                        scale: Vector2 {x: 1.0, y: 1.0},
+                        offset: Point2 {x: 0.5, y: 0.5},
+                    },
+                    ..Default::default()
+                }
+            );
+        }
+
+        // DOWN
+        if touches.contains(&Input::DOWN) {
+            canvas.draw(
+                &self.key_arrow_pressed_image,
+                DrawParam {
+                    transform: Transform::Values {
+                        dest: Point2 {x: 700.0, y: 500.0 + 2.0},
+                        rotation: 180.0 * std::f32::consts::PI / 180.0,
+                        scale: Vector2 {x: 1.0, y: 1.0},
+                        offset: Point2 {x: 0.5, y: 0.5},
+                    },
+                    ..Default::default()
+                }
+            );
+        } else {
+            canvas.draw(
+                &self.key_arrow_image,
+                DrawParam {
+                    transform: Transform::Values {
+                        dest: Point2 {x: 700.0, y: 500.0 + 2.0},
+                        rotation: 180.0 * std::f32::consts::PI / 180.0,
+                        scale: Vector2 {x: 1.0, y: 1.0},
+                        offset: Point2 {x: 0.5, y: 0.5},
+                    },
+                    ..Default::default()
+                }
+            );
+        }
+
+        // RIGHT
+        if touches.contains(&Input::RIGHT) {
+            canvas.draw(
+                &self.key_arrow_pressed_image,
+                DrawParam {
+                    transform: Transform::Values {
+                        dest: Point2 {x: 700.0 + 34.0, y: 500.0 + 2.0},
+                        rotation: 90.0 * std::f32::consts::PI / 180.0,
+                        scale: Vector2 {x: 1.0, y: 1.0},
+                        offset: Point2 {x: 0.5, y: 0.5},
+                    },
+                    ..Default::default()
+                }
+            );
+        } else {
+            canvas.draw(
+                &self.key_arrow_image,
+                DrawParam {
+                    transform: Transform::Values {
+                        dest: Point2 {x: 700.0 + 34.0, y: 500.0 + 2.0},
+                        rotation: 90.0 * std::f32::consts::PI / 180.0,
+                        scale: Vector2 {x: 1.0, y: 1.0},
+                        offset: Point2 {x: 0.5, y: 0.5},
+                    },
+                    ..Default::default()
+                }
+            );
+        }
+
+        // LEFT
+        if touches.contains(&Input::LEFT) {
+            canvas.draw(
+                &self.key_arrow_pressed_image,
+                DrawParam {
+                    transform: Transform::Values {
+                        dest: Point2 {x: 700.0 - 34.0, y: 500.0 + 2.0},
+                        rotation: -90.0 * std::f32::consts::PI / 180.0,
+                        scale: Vector2 {x: 1.0, y: 1.0},
+                        offset: Point2 {x: 0.5, y: 0.5},
+                    },
+                    ..Default::default()
+                }
+            );
+        } else {
+            canvas.draw(
+                &self.key_arrow_image,
+                DrawParam {
+                    transform: Transform::Values {
+                        dest: Point2 {x: 700.0 - 34.0, y: 500.0 + 2.0},
+                        rotation: -90.0 * std::f32::consts::PI / 180.0,
+                        scale: Vector2 {x: 1.0, y: 1.0},
+                        offset: Point2 {x: 0.5, y: 0.5},
+                    },
+                    ..Default::default()
+                }
+            );
+        }
+
+
+    }
+
     pub fn update_kb(&mut self, _ctx: &mut ggez::Context) -> GameResult {
-
-        let k_ctx = &_ctx.keyboard;
-
-        let keys = k_ctx
-            .pressed_keys()
-            .iter()
-            .filter_map(|keycode| Input::from_keycode(keycode))
-            .collect::<Vec<Input>>();
+        let keys = self.get_keys(_ctx);
 
         self.player.update_deplacement(&keys, self.tilemap.layouts.get(0).unwrap(), self.tilemap.tile_size as f32, self.dt);
 
@@ -260,6 +414,16 @@ impl Game {
         self.update_activate_debug(_ctx);
 
         Ok(())
+    }
+
+    fn get_keys(&self, _ctx: &mut ggez::Context) -> Vec<Input> {
+        let k_ctx = &_ctx.keyboard;
+
+        k_ctx
+            .pressed_keys()
+            .iter()
+            .filter_map(|keycode| Input::from_keycode(keycode))
+            .collect::<Vec<Input>>()
     }
 
     pub fn update_dt(&mut self, ctx: &mut ggez::Context) {
