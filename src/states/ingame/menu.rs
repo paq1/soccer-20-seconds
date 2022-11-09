@@ -47,6 +47,7 @@ impl Menu {
         );
 
         let press_to_start_text = Text::new(format!("press [SPACE] to start"));
+        let created = Text::new(format!("created by github.com/paq1"));
 
         let win_width = ctx.gfx.size().0;
         let win_height = ctx.gfx.size().1;
@@ -82,6 +83,19 @@ impl Menu {
             DrawParam {
                 transform: Transform::Values {
                     dest: Point2 {x: win_width / 2.0, y: win_height / 2.0 + 100.0},
+                    rotation: 0.0,
+                    scale: Vector2 {x: 1.0, y: 1.0},
+                    offset: Point2 {x: 0.5, y: 0.5}, // on centre le texte
+                },
+                ..Default::default()
+            }
+        );
+
+        canvas.draw(
+            &created,
+            DrawParam {
+                transform: Transform::Values {
+                    dest: Point2 {x: win_width / 2.0, y: win_height / 2.0 - 200.0},
                     rotation: 0.0,
                     scale: Vector2 {x: 1.0, y: 1.0},
                     offset: Point2 {x: 0.5, y: 0.5}, // on centre le texte
