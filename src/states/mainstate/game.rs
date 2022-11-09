@@ -1,4 +1,4 @@
-use ggez::{audio, GameResult, graphics};
+use ggez::{GameResult, graphics};
 use ggez::audio::SoundSource;
 use ggez::glam::Vec2;
 use ggez::graphics::{Canvas, DrawParam, Text, Transform};
@@ -9,6 +9,7 @@ use crate::states::mainstate::ballon::Ballon;
 use crate::states::mainstate::but::But;
 use crate::states::mainstate::gardien::Gardien;
 use crate::states::mainstate::player::Player;
+use crate::states::mainstate::sounds::GameSounds;
 use crate::states::mainstate::sprites::GameSprites;
 use crate::states::mainstate::State;
 use crate::states::mainstate::tilemap::Tilemap;
@@ -22,9 +23,7 @@ pub struct Game {
     but: But,
     pub score: u32,
     sprites: GameSprites,
-    son_shoot: audio::Source,
-    son_siiuu: audio::Source,
-    son_bruh: audio::Source,
+    sounds: GameSounds,
     timer: f32,
     dt: f32
 }
@@ -48,9 +47,7 @@ impl Game {
             but: But { position: Vecteur2D { x: 32.0, y: 5.0 * 32.0}, size: Vecteur2D { x: 32.0, y: 32.0 * 3.0} },
             score: 0,
             sprites: GameSprites::new(ctx)?,
-            son_shoot: audio::Source::new(ctx, "/sounds/shoot.wav")?,
-            son_siiuu: audio::Source::new(ctx, "/sounds/siiuu.mp3")?,
-            son_bruh: audio::Source::new(ctx, "/sounds/bruh.mp3")?,
+            sounds: GameSounds::new(ctx)?,
             timer: 20.0,
             dt: 0.0
         })
@@ -378,7 +375,7 @@ impl Game {
                 .as_ref()
                 .map(|ballon| {
                     if ballon.direction_du_shoot.is_none() && !ballon.est_au_centre {
-                        self.son_shoot.play(_ctx).unwrap();
+                        self.sounds.son_shoot.play(_ctx).unwrap();
                         Ballon {
                             position: ballon.position.clone(),
                             direction_du_shoot: Some(shoot),
@@ -423,19 +420,19 @@ impl Game {
 
                 // on verifie si le ballon est dans but
                 if self.but.is_in(&pos_a_jour.position) {
-                    self.son_siiuu.play(ctx).unwrap();
+                    self.sounds.son_siiuu.play(ctx).unwrap();
                     self.score += 1;
                     None // on supprime le ballon
                 }
                 // on verifie si le ballon est dans le gardien
                 else if self.gardien.catch_the_ball(ballon) {
-                    self.son_bruh.play(ctx).unwrap();
+                    self.sounds.son_bruh.play(ctx).unwrap();
 
                     None // on supprime le ballon mais on ne marque pas de but
                 }
                 // on verifie si le ballon est en dehors du terrain
                 else if !self.tilemap.is_in(&pos_a_jour.position) {
-                    self.son_bruh.play(ctx).unwrap();
+                    self.sounds.son_bruh.play(ctx).unwrap();
                     None // on supprime le ballon
                 }
 

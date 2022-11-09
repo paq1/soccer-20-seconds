@@ -15,6 +15,7 @@ mod game;
 mod menu;
 mod end;
 mod sprites;
+mod sounds;
 
 #[derive(Debug)]
 pub enum State {
