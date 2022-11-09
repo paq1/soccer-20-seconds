@@ -6,6 +6,7 @@ use crate::states::ingame::State;
 
 pub struct Menu {
     image_ballon: graphics::Image,
+    image_titre: graphics::Image,
     angle: f32,
 }
 
@@ -14,6 +15,7 @@ impl Menu {
     pub fn load(_ctx: &mut ggez::Context) -> GameResult<Self> {
         Ok(Self {
             image_ballon: graphics::Image::from_path(_ctx, "/menu_ballon.png")?,
+            image_titre: graphics::Image::from_path(_ctx, "/titre.png")?,
             angle: 0.0
         })
     }
@@ -56,6 +58,19 @@ impl Menu {
                     dest: Point2 {x: win_width / 2.0, y: win_height / 2.0},
                     rotation: self.angle * std::f32::consts::PI / 180.0,
                     scale: Vector2 {x: 1.0, y: 1.2},
+                    offset: Point2 {x: 0.5, y: 0.5}, // on centre le texte
+                },
+                ..Default::default()
+            }
+        );
+
+        canvas.draw(
+            &self.image_titre,
+            DrawParam {
+                transform: Transform::Values {
+                    dest: Point2 {x: win_width / 2.0, y: 32.0},
+                    rotation: 0.0,
+                    scale: Vector2 {x: 1.0, y: 1.0},
                     offset: Point2 {x: 0.5, y: 0.5}, // on centre le texte
                 },
                 ..Default::default()
